@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:codekeeper/widgets/home.dart';
+import 'package:provider/provider.dart';
+
+import 'package:codekeeper/models/theme_model.dart';
+import 'package:codekeeper/screens/home.dart';
 
 class CodeKeeperApp extends StatelessWidget {
   const CodeKeeperApp({Key? key}) : super(key: key);
@@ -8,8 +11,9 @@ class CodeKeeperApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Code Keeper App',
-      theme: ThemeData(),
+      theme: Provider.of<ThemeModel>(context).currentTheme,
       home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

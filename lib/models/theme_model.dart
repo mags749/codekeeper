@@ -1,9 +1,10 @@
-import 'package:codekeeper/enums/theme_type.dart';
-import 'package:codekeeper/utils/theme.dart';
 import 'package:flutter/material.dart';
 
+import 'package:codekeeper/enums/theme_type.dart';
+import 'package:codekeeper/utils/theme.dart';
+
 class ThemeModel extends ChangeNotifier {
-  ThemeData currentTheme = lightTheme;
+  ThemeData currentTheme = darkTheme;
   ThemeType _themeType = ThemeType.Dark;
 
   toggleTheme() {
@@ -17,5 +18,9 @@ class ThemeModel extends ChangeNotifier {
       _themeType = ThemeType.Dark;
       return notifyListeners();
     }
+  }
+
+  ThemeType get themeType {
+    return _themeType;
   }
 }
