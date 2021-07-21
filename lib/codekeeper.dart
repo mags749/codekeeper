@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:codekeeper/models/theme_model.dart';
-import 'package:codekeeper/screens/home.dart';
+import 'package:codekeeper/screens/home/home_screen.dart';
 
 class CodeKeeperApp extends StatelessWidget {
   const CodeKeeperApp({Key? key}) : super(key: key);
