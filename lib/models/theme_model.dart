@@ -4,8 +4,8 @@ import 'package:codekeeper/enums/theme_type.dart';
 import 'package:codekeeper/utils/theme.dart';
 
 class ThemeModel extends ChangeNotifier {
-  ThemeData currentTheme = darkTheme;
-  ThemeType _themeType = ThemeType.Dark;
+  ThemeData currentTheme = lightTheme;
+  ThemeType _themeType = ThemeType.Light;
 
   toggleTheme() {
     if (_themeType == ThemeType.Dark) {

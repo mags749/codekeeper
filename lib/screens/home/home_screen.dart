@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
+        brightness: Theme.of(context).brightness,
         title: Text(
           title,
           style: Theme.of(context).textTheme.headline4,
