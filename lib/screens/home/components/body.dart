@@ -5,13 +5,22 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:codekeeper/utils/constants.dart';
+import 'package:codekeeper/utils/theme.dart';
 import 'package:codekeeper/widgets/block_button.dart';
 import 'package:codekeeper/widgets/code_list_item.dart';
 
-class HomeScreenBody extends StatelessWidget {
+class HomeScreenBody extends StatefulWidget {
   const HomeScreenBody({Key? key}) : super(key: key);
+
+  @override
+  _HomeScreenBodyState createState() => _HomeScreenBodyState();
+}
+
+class _HomeScreenBodyState extends State<HomeScreenBody> {
+  String barCodeString = '';
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +32,80 @@ class HomeScreenBody extends StatelessWidget {
             children: [
               GestureDetector(
                 child: BlockButton(iconData: CupertinoIcons.qrcode_viewfinder),
-                onTap: scanCode,
+                onTap: () => scanCode(context),
               ),
               GestureDetector(
                 child: BlockButton(iconData: CupertinoIcons.qrcode),
                 onTap: () {
-                  print('Generate barcode tapped');
+                  setState(() {
+                    if (this.barCodeString == '') {
+                      setState(() {
+                        this.barCodeString = 'Hello';
+                      });
+                    } else
+                      setState(() {
+                        this.barCodeString = '';
+                      });
+                  });
                 },
               )
             ],
+          ),
+          Visibility(
+            visible: barCodeString != '',
+            child: Container(
+              margin: EdgeInsets.only(
+                left: ckDefaultPadding,
+                bottom: ckDefaultPadding * 2,
+                right: ckDefaultPadding,
+              ),
+              padding: EdgeInsets.all(ckDefaultPadding),
+              decoration: BoxDecoration(
+                color: Theme.of(context).backgroundColor,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(ckDefaultRadius),
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(barCodeString),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      OutlinedButton(
+                        onPressed: () {},
+                        child: Text('Save'),
+                        style: OutlinedButton.styleFrom(
+                          primary: Theme.of(context).accentColor,
+                          minimumSize: Size(88, 36),
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                        ),
+                      ),
+                      OutlinedButton(
+                        onPressed: () {
+                          setState(() {
+                            this.barCodeString = '';
+                          });
+                        },
+                        child: Text('Cancel'),
+                        style: OutlinedButton.styleFrom(
+                          primary: Theme.of(context).errorColor,
+                          minimumSize: Size(88, 36),
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
           ),
           Expanded(
             child: Stack(
@@ -55,20 +129,34 @@ class HomeScreenBody extends StatelessWidget {
     );
   }
 
-  Future scanCode() async {
+  Future showMessage(String msg, BuildContext context) {
+    return Fluttertoast.showToast(
+      backgroundColor: Theme.of(context).errorColor,
+      gravity: ToastGravity.BOTTOM,
+      msg: msg,
+      textColor: darkTextStyle.color,
+    );
+  }
+
+  Future scanCode(BuildContext context) async {
     try {
-      ScanResult brCode = await BarcodeScanner.scan();
-      print(brCode);
+      ScanResult barcode = await BarcodeScanner.scan();
+      setState(() => this.barCodeString = barcode.toString());
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.cameraAccessDenied) {
-        print('The user did not grant the camera permission!');
+        showMessage(
+            "Camera access is disabled. Please enable the camera access to use the app",
+            context);
       } else {
-        print('Platform exception: $e');
+        showMessage("Unable to access camera.", context);
+        debugPrint('Platform Exception :: $e');
       }
     } on FormatException catch (e) {
-      print('Format exception: $e');
+      showMessage("Unknown QR code format.", context);
+      debugPrint('Format Exception :: $e');
     } catch (e) {
-      print('Unknown exception: $e');
+      showMessage("Unable to capture the code", context);
+      debugPrint('Unknown Exception :: $e');
     }
   }
 }
