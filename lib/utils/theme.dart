@@ -26,7 +26,7 @@ ThemeData darkTheme = ThemeData(
 ThemeData lightTheme = ThemeData(
   accentColor: HexColor('#30E3CA'),
   appBarTheme: AppBarTheme(elevation: 0.0),
-  backgroundColor: HexColor('#222831').withOpacity(0.05),
+  backgroundColor: HexColor('#222831').withOpacity(0.1),
   brightness: Brightness.light,
   errorColor: HexColor("#e76f51"),
   fontFamily: GoogleFonts.play().fontFamily,

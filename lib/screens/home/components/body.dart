@@ -32,7 +32,53 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
             children: [
               GestureDetector(
                 child: BlockButton(iconData: CupertinoIcons.qrcode_viewfinder),
-                onTap: () => scanCode(context),
+                onTap: () async {
+                  await scanCode(context);
+                  showModalBottomSheet<void>(
+                    context: context,
+                    builder: (BuildContext context) => Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(barCodeString),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            OutlinedButton(
+                              onPressed: () {},
+                              child: Text('Save'),
+                              style: OutlinedButton.styleFrom(
+                                primary: Theme.of(context).accentColor,
+                                minimumSize: Size(88, 36),
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                              ),
+                            ),
+                            OutlinedButton(
+                              onPressed: () {
+                                setState(() {
+                                  this.barCodeString = '';
+                                });
+                              },
+                              child: Text('Cancel'),
+                              style: OutlinedButton.styleFrom(
+                                primary: Theme.of(context).errorColor,
+                                minimumSize: Size(88, 36),
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                },
               ),
               GestureDetector(
                 child: BlockButton(iconData: CupertinoIcons.qrcode),
@@ -50,62 +96,6 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                 },
               )
             ],
-          ),
-          Visibility(
-            visible: barCodeString != '',
-            child: Container(
-              margin: EdgeInsets.only(
-                left: ckDefaultPadding,
-                bottom: ckDefaultPadding * 2,
-                right: ckDefaultPadding,
-              ),
-              padding: EdgeInsets.all(ckDefaultPadding),
-              decoration: BoxDecoration(
-                color: Theme.of(context).backgroundColor,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(ckDefaultRadius),
-                ),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(barCodeString),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      OutlinedButton(
-                        onPressed: () {},
-                        child: Text('Save'),
-                        style: OutlinedButton.styleFrom(
-                          primary: Theme.of(context).accentColor,
-                          minimumSize: Size(88, 36),
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                        ),
-                      ),
-                      OutlinedButton(
-                        onPressed: () {
-                          setState(() {
-                            this.barCodeString = '';
-                          });
-                        },
-                        child: Text('Cancel'),
-                        style: OutlinedButton.styleFrom(
-                          primary: Theme.of(context).errorColor,
-                          minimumSize: Size(88, 36),
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
           ),
           Expanded(
             child: Stack(
@@ -140,8 +130,13 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
 
   Future scanCode(BuildContext context) async {
     try {
+      await new Future.delayed(const Duration(seconds: 5));
       ScanResult barcode = await BarcodeScanner.scan();
-      setState(() => this.barCodeString = barcode.toString());
+      print(barcode.format);
+      print(barcode.formatNote);
+      print(barcode.rawContent);
+      print(barcode.type);
+      setState(() => this.barCodeString = barcode.rawContent);
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.cameraAccessDenied) {
         showMessage(
